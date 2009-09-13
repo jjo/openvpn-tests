@@ -1,5 +1,5 @@
 #!/bin/sh -x
-: ${OPENVPN:=./openvpn}
+: ${OPENVPN?}
 case "$1" in
 --freebsd) shift;set --   ed0 "$@";;
 --openbsd) shift;set --   ne3 --dev tun0 "$@";;

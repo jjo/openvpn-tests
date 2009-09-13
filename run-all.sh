@@ -1,7 +1,7 @@
 #!/bin/bash
 source ${0%/*}/libtest.sh || exit 1
 
-ln -sf $PWD/openvpn $t/openvpn-test
+cp -pu $PWD/openvpn $t/openvpn-test
 my_dir=${0%/*}
 export OPENVPN="$t/openvpn-test"
 
@@ -20,13 +20,22 @@ test_bg_egrep 30 "Initialization Sequence Completed" ${my_dir?}/run-udp6-0-loopb
 
 if fping jjolix;then
 SUDO=sudo
-test_bg_cleanup ## force
+test_bg_cleanup ## special SUDO forces
 test_define "UDP6 remote"
-test_bg_prev ${my_dir?}/run-udp6-1-jjolix.sh --inactive 30
-test_bg_egrep 30 "Initialization Sequence Completed" ${my_dir?}/run-udp6-1-jjobuk.sh --inactive 30
+test_bg_prev ${my_dir?}/run-udp6-1-jjolix.sh --ping-exit 30
+test_bg_egrep 30 "Initialization Sequence Completed" ${my_dir?}/run-udp6-1-jjobuk.sh --ping-exit 30
+
+test_bg_cleanup ## special SUDO forces
+sudo killall -q -9 openvpn-test
+test_define "TCP6 remote"
+test_bg_prev ${my_dir?}/run-tcp6-1-jjolix-server.sh --ping-exit 30
+sleep 10
+test_bg_egrep 30 "Initialization Sequence Completed" ${my_dir?}/run-tcp6-1-jjobuk-client.sh --ping-exit 30
+sudo killall -q -9 openvpn-test
+test_bg_cleanup ## special SUDO forces
 unset SUDO
 else
-say "UDP6 remote declined (you're not @home)"
+say "UDP6, TCP6 remote tests declined (you're not @home)"
 fi
 test_define "TCP6 loopback"
 test_bg_prev ${my_dir?}/run-tcp6-0-loopback-server.sh
