@@ -9,12 +9,15 @@ TEST_CLEANUP=":"
 
 say () {
 	echo "$@" >&3
+} 
+notice() {
+	say "NOTICE: $@"
 }
 err () {
-	echo "$@" >&4
+	echo "ERROR: $@" >&4
 }
 debug () {
-	echo "$@" >&4
+	echo "DEBUG: $@" >&4
 }
 test_define() {
 	test_name="$*"

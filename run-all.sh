@@ -19,6 +19,12 @@ test_define "UDP6 loopback byname"
 test_bg_egrep 30 "Initialization Sequence Completed" ${my_dir?}/run-udp6-0-loopback-byname.sh
 
 if fping jjolix;then
+  DEV="$(/sbin/ip r get 1 | sed -r -n 's/.* dev ([^ ]+).*/\1/p')"
+  export REM6="fe80::20d:b9ff:fe14:e09c%$DEV"
+else
+  export REM6=2002:5449:2ce5:1:20d:b9ff:fe14:e09c
+fi
+if ping6 -c 1 $REM6 >/dev/null 2>&1;then
 SUDO=sudo
 test_bg_cleanup ## special SUDO forces
 test_define "UDP6 remote"
@@ -35,7 +41,7 @@ sudo killall -q -9 openvpn-test
 test_bg_cleanup ## special SUDO forces
 unset SUDO
 else
-say "UDP6, TCP6 remote tests declined (you're not @home)"
+notice "UDP6, TCP6 remote tests declined (you're not @home)"
 fi
 test_define "TCP6 loopback"
 test_bg_prev ${my_dir?}/run-tcp6-0-loopback-server.sh
