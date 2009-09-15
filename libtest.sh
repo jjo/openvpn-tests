@@ -14,12 +14,12 @@ notice() {
 	say "NOTICE: $@"
 }
 err () {
-	echo -e "ERROR: $@" >&4
+	echo -e "${_P:=}ERROR: $@" >&4
 }
 debug () {
 	local x=
 	case "$1" in -*) x="$1";shift;; esac
-	echo $x -e "\n  DEBUG: $@" >&4
+	echo $x -e "${_P:=}DEBUG: $@" >&4
 }
 test_define() {
 	test_name="$*"
@@ -53,13 +53,13 @@ test_bg_egrep() {
 	local txt="$2"
 	local ret
 	shift 2
-	test_expect_success "$test_name" \
+	test_expect_success "" \
 		"set -m ; $@ &> $t/out-$test_sanename &
 		s=1;
 		for i in \$(seq 1 $nsecs);do 
 			say -n '.'
 			kill -0 %1 || { egrep failed $t/out-$test_sanename >&4; break; }
-			o=\$(egrep \"$txt\" $t/out-$test_sanename ) && { debug -n \$o; s=0; break; }
+			o=\$(egrep \"$txt\" $t/out-$test_sanename ) && { _P=$'\n  ' debug -n \$o; s=0; break; }
 			sleep 1;
 		done;
 		kill %1
@@ -68,7 +68,7 @@ test_bg_egrep() {
 		" 2>/dev/null 4>$t/err
 	ret=$?
 	test $ret -eq 0 && return 0
-	err "$test_sanename: log at $t/out-$test_sanename*" 
+	_P='  ' err "$test_sanename: log at $t/out-$test_sanename*" 
 	return $ret
 }
 # run command in *current* shell ignoring stderr, evals args passed
