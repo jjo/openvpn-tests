@@ -22,26 +22,26 @@ if fping jjolix;then
   DEV="$(/sbin/ip r get 1 | sed -r -n 's/.* dev ([^ ]+).*/\1/p')"
   export REM6="fe80::20d:b9ff:fe14:e09c%$DEV"
 else
-  export REM6=2002:5449:2ce5:1:20d:b9ff:fe14:e09c
+  export REM6=2002:5449:2ce5:2:20d:b9ff:fe14:e09c
 fi
 if ping6 -c 1 $REM6 >/dev/null 2>&1;then
-SUDO=sudo
-test_bg_cleanup ## special SUDO forces
-test_define "UDP6 remote"
-test_bg_prev ${my_dir?}/run-udp6-1-jjolix.sh --ping-exit 30
-test_bg_egrep 30 "Initialization Sequence Completed" ${my_dir?}/run-udp6-1-jjobuk.sh --ping-exit 30
+  SUDO=sudo
+  test_bg_cleanup ## special SUDO forces
+  test_define "UDP6 remote"
+  test_bg_prev ${my_dir?}/run-udp6-1-jjolix.sh --ping-exit 30
+  test_bg_egrep 30 "Initialization Sequence Completed" ${my_dir?}/run-udp6-1-jjobuk.sh --ping-exit 30
 
-test_bg_cleanup ## special SUDO forces
-sudo killall -q -9 openvpn-test
-test_define "TCP6 remote"
-test_bg_prev ${my_dir?}/run-tcp6-1-jjolix-server.sh --ping-exit 30
-sleep 10
-test_bg_egrep 30 "Initialization Sequence Completed" ${my_dir?}/run-tcp6-1-jjobuk-client.sh --ping-exit 30
-sudo killall -q -9 openvpn-test
-test_bg_cleanup ## special SUDO forces
-unset SUDO
+  test_bg_cleanup ## special SUDO forces
+  sudo killall -q -9 openvpn-test
+  test_define "TCP6 remote"
+  test_bg_prev ${my_dir?}/run-tcp6-1-jjolix-server.sh --ping-exit 30
+  sleep 10
+  test_bg_egrep 30 "Initialization Sequence Completed" ${my_dir?}/run-tcp6-1-jjobuk-client.sh --ping-exit 30
+  sudo killall -q -9 openvpn-test
+  test_bg_cleanup ## special SUDO forces
+  unset SUDO
 else
-notice "UDP6, TCP6 remote tests declined (you're not @home)"
+  notice "REM6=$REM6 not reachable, skipping remote UDP6,TCP6 tests"
 fi
 test_define "TCP6 loopback"
 test_bg_prev ${my_dir?}/run-tcp6-0-loopback-server.sh
