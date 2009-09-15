@@ -1,35 +1,37 @@
 #!/bin/bash
 
 typeset -i test_num=0 # increments w/each test_define
-typeset test_msg	# prefix: "test nr#"  for msgs
+typeset test_msg	# prefix: "Test nr#"  for msgs
 typeset test_name	# test name given	
 typeset test_sanename	# test name with all whitespace (and alike) replaced by '_'
 
 TEST_CLEANUP=":"
 
 say () {
-	echo "$@" >&3
+	echo -e "$@" >&3
 } 
 notice() {
 	say "NOTICE: $@"
 }
 err () {
-	echo "ERROR: $@" >&4
+	echo -e "ERROR: $@" >&4
 }
 debug () {
-	echo "DEBUG: $@" >&4
+	local x=
+	case "$1" in -*) x="$1";shift;; esac
+	echo $x -e "\n  DEBUG: $@" >&4
 }
 test_define() {
 	test_name="$*"
 	test_sanename="$(echo -n $test_name| tr -c '[A-Za-z0-9._]' _ )"
 	test_num=test_num+1
-	test_msg="test $test_num"
+	test_msg="Test $test_num"
 	test_bg_cleanup 
 }
 test_expect_success () {
 	local msg="$1" 
 	test $# -ge 2 || { err "usage error: test_expect_failure msg cmd args ..."; return 1; }
-	say -n "$test_msg: -- $msg (expecting success) "
+	say -n "$test_msg: $test_sanename: $msg (expecting success) "
 	shift
 	(eval "$@" 4>&1) && { say -e "\n$test_msg: OK %%% $test_sanename" ;  return 0 ; }
 	say -e "\n$test_msg: FAILED %%% $test_sanename" 
@@ -57,7 +59,7 @@ test_bg_egrep() {
 		for i in \$(seq 1 $nsecs);do 
 			say -n '.'
 			kill -0 %1 || { egrep failed $t/out-$test_sanename >&4; break; }
-			o=\$(egrep \"$txt\" $t/out-$test_sanename ) && { debug \$o; s=0; break; }
+			o=\$(egrep \"$txt\" $t/out-$test_sanename ) && { debug -n \$o; s=0; break; }
 			sleep 1;
 		done;
 		kill %1
@@ -66,7 +68,7 @@ test_bg_egrep() {
 		" 2>/dev/null 4>$t/err
 	ret=$?
 	test $ret -eq 0 && return 0
-	say "$test_msg: see: $t/out-$test_sanename*" 
+	err "$test_sanename: log at $t/out-$test_sanename*" 
 	return $ret
 }
 # run command in *current* shell ignoring stderr, evals args passed
