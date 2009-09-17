@@ -68,7 +68,8 @@ test_bg_egrep() {
 		" 2>/dev/null 4>$t/err
 	ret=$?
 	test $ret -eq 0 && return 0
-	_P='  ' err "$test_sanename: log at $t/out-$test_sanename*" 
+	mv --backup=t $t/out-$test_sanename{,.fail}
+	_P='  ' err "$test_sanename: log at $t/out-$test_sanename.fail" 
 	return $ret
 }
 # run command in *current* shell ignoring stderr, evals args passed
@@ -85,7 +86,7 @@ test_bg_prev(){ local out=$t/out-$test_sanename-prev; $@ >& $out & }
 test_bg_cleanup() { quiet2 "$TEST_CLEANUP;${@:-:};kill % 2>/dev/null;wait" ;}
 test_set_cleanup () { TEST_CLEANUP="${*:-:}" ;}
 
-t=/tmp
+: ${LIBTEST_OUTPUT_DIR?}
 exec 3>&1
 exec 4>&2
 
