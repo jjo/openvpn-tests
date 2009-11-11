@@ -75,12 +75,12 @@ test_bg_egrep() {
 # run command in *current* shell ignoring stderr, evals args passed
 quiet2() {
 	#backup fd=2
-	exec 250>&2
+	exec 5>&2
 	exec 2>/dev/null
 	eval "$@"
 	#close auxfd
-	exec 2>&250
-	exec 250>&-
+	exec 2>&5
+	exec 5>&-
 }
 test_bg_prev(){ local out=$t/out-$test_sanename-prev; $@ >& $out & }
 test_bg_cleanup() { quiet2 "$TEST_CLEANUP;${@:-:};kill % 2>/dev/null;wait" ;}

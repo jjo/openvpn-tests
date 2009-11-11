@@ -5,8 +5,8 @@ export LIBTEST_OUTPUT_DIR=/tmp
 
 # my_env.sh should contain the following vars:
 #   REM6="2002:5457:5de5:2:20d:b9ff:fe29:901a"
-source ${0%/*}/my_env.sh || exit 1
-source ${0%/*}/libtest.sh || exit 1
+. ${0%/*}/my_env.sh || exit 1
+. ${0%/*}/libtest.sh || exit 1
 
 t=$LIBTEST_OUTPUT_DIR
 tdir=${0%/*}
@@ -14,14 +14,14 @@ tdir=${0%/*}
 # no-op, just to document :)
 : ${O_ARGS:=}
 if [ -f openvpn ];then
-  cp -pu $PWD/openvpn $t/openvpn-test || exit 1
+  cp -p $PWD/openvpn $t/openvpn-test || exit 1
   export OPENVPN="$t/openvpn-test"
 elif [ -f openvpn.exe ];then
-  cp -pu $PWD/openvpn.exe $t/openvpn-test.exe || exit 1
+  cp -p $PWD/openvpn.exe $t/openvpn-test.exe || exit 1
   export OPENVPN="$t/openvpn-test.exe"
 fi
 
-all_tests() {
+all_tests(){
 local post="$1"
 
 test_set_cleanup "ps ax | awk '/[o]penvpn-test/ { print \$1 }'  | ${SUDO} xargs -r kill"
