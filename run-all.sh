@@ -13,18 +13,23 @@ tdir=${0%/*}
 
 # no-op, just to document :)
 : ${O_ARGS:=}
+unset OPENVPN
+BINNAME=openvpn-test-$USER
 if [ -f openvpn ];then
-  cp -p $PWD/openvpn $t/openvpn-test || exit 1
-  export OPENVPN="$t/openvpn-test"
+  cp -p $PWD/openvpn $t/$BINNAME || exit 1
+  export OPENVPN="$t/$BINNAME"
 elif [ -f openvpn.exe ];then
-  cp -p $PWD/openvpn.exe $t/openvpn-test.exe || exit 1
-  export OPENVPN="$t/openvpn-test.exe"
+  cp -p $PWD/openvpn.exe $t/$BINNAME.exe || exit 1
+  export OPENVPN="$t/$BINNAME.exe"
+else
+  echo "./openvpn[.exe] not found, failing"
+  exit 2
 fi
 
 all_tests(){
 local post="$1"
 
-test_set_cleanup "ps ax | awk '/[o]penvpn-test/ { print \$1 }'  | ${SUDO} xargs -r kill"
+test_set_cleanup "${SUDO} killall $OPENVPN"
 
 trap 'test_bg_cleanup;exit' 0 2 15
 
@@ -33,6 +38,13 @@ test_bg_egrep 30 "Initialization Sequence Completed" ${tdir?}/run-udp6-0-loopbac
 
 test_define "UDP6 loopback byname$post"
 test_bg_egrep 30 "Initialization Sequence Completed" ${tdir?}/run-udp6-0-loopback-byname.sh $O_ARGS
+
+test_define "UDP6 loopback4mapped$post"
+test_bg_egrep 30 "Initialization Sequence Completed" ${tdir?}/run-udp6-0-loopback4mapped.sh $O_ARGS
+
+test_define "UDP6 loopback4native$post"
+test_bg_prev ${tdir?}/run-udp6-0-loopback_passive.sh
+test_bg_egrep 30 "Initialization Sequence Completed" ${tdir?}/run-udp6-0-loopback4native.sh $O_ARGS
 
 if ping6 -c 1 "$REM6" >/dev/null 2>&1;then
   test_define "UDP6 remote$post"
@@ -52,6 +64,14 @@ test_bg_egrep 30 "Initialization Sequence Completed" ${tdir?}/run-tcp6-0-loopbac
 test_define "TCP6 loopback byname$post"
 test_bg_prev ${tdir?}/run-tcp6-0-loopback-server-byname.sh $O_ARGS
 test_bg_egrep 30 "Initialization Sequence Completed" ${tdir?}/run-tcp6-0-loopback-client-byname.sh $O_ARGS
+
+test_define "TCP6 loopback client4mapped$post"
+test_bg_prev ${tdir?}/run-tcp6-0-loopback-server.sh $O_ARGS
+test_bg_egrep 30 "Initialization Sequence Completed" ${tdir?}/run-tcp6-0-loopback-client4mapped.sh $O_ARGS
+
+test_define "TCP6 loopback client4native$post"
+test_bg_prev ${tdir?}/run-tcp6-0-loopback-server.sh $O_ARGS
+test_bg_egrep 30 "Initialization Sequence Completed" ${tdir?}/run-tcp6-0-loopback-client4native.sh $O_ARGS
 
 test_define "UDP4 loopback$post"
 test_bg_egrep 30 "Initialization Sequence Completed" ${tdir?}/run-udp4-0-loopback.sh $O_ARGS
