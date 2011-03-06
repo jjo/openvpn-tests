@@ -33,8 +33,8 @@ test_expect_success () {
 	test $# -ge 2 || { err "usage error: test_expect_failure msg cmd args ..."; return 1; }
 	say -n "$test_msg: $test_sanename: $msg (expecting success) "
 	shift
-	(eval "$@" 4>&1) && { say -e "\n$test_msg: OK %%% $test_sanename" ;  return 0 ; }
-	say -e "\n$test_msg: FAILED %%% $test_sanename" 
+	(eval "$@" 4>&1) && { say -e "\n$test_msg: PASS %%% $test_sanename" ;  return 0 ; }
+	say -e "\n$test_msg: FAIL %%% $test_sanename" 
 	return 1
 }
 
@@ -43,7 +43,7 @@ test_expect_failure () {
 	test $# -ge 2 || { err "usage error: test_expect_failure msg cmd args ...";  return 1;}
 	say -n "$test_msg: -- $msg (expecting failure) "
 	shift
-	(eval "$@") && { say -e "\n$test_msg: FAILED %%% $test_sanename" >&3 ;  return 0 ; }
+	(eval "$@") && { say -e "\n$test_msg: FAIL %%% $test_sanename" >&3 ;  return 0 ; }
 	say -e "\n$test_msg: OK %%% $test_sanename"
 	return 1
 }
