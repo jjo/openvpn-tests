@@ -25,7 +25,7 @@ test_define() {
 	test_name="$*"
 	test_sanename="$(echo -n $test_name| tr -c '[A-Za-z0-9._]' _ )"
 	test_num=test_num+1
-	test_msg="Test $test_num"
+	test_msg="$(printf "Test %02d" $test_num)"
 	test_bg_cleanup 
 }
 test_expect_success () {
@@ -59,7 +59,7 @@ test_bg_egrep() {
 		for i in \$(seq 1 $nsecs);do 
 			say -n '.'
 			kill -0 %1 || { egrep failed $t/out-$test_sanename >&4; break; }
-			o=\$(egrep \"$txt\" $t/out-$test_sanename ) && { _P=$'\n  ' debug -n \$o; s=0; break; }
+			o=\$(egrep \"$txt\" $t/out-$test_sanename ) && { _P=$'\n         ' debug -n \$o; s=0; break; }
 			sleep 1;
 		done;
 		kill %1

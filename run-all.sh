@@ -48,7 +48,7 @@ test_define "UDP6 loopback4native$post"
 test_bg_prev ${tdir?}/run-udp6-0-loopback_passive.sh
 test_bg_egrep 30 "$STR_INIT_OK" ${tdir?}/run-udp6-0-loopback4native.sh $O_ARGS
 
-(set -x;${SUDO:-sudo} /sbin/ip -6 -o a </dev/tty >/dev/tty)
+(set -x;/sbin/ip -6 -o a </dev/tty >/dev/tty)
 test_define "UDP6 loopback_multihome$post"
 test_bg_prev ${tdir?}/run-udp6-0-loopback_listen_multihome.sh  $O_ARGS
 test_bg_egrep 60 "Peer Connection Initiated with.*via" ${tdir?}/run-udp6-0-loopback_connect_multihome.sh $O_ARGS
