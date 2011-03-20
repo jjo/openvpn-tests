@@ -61,6 +61,7 @@ if [ -x /usr/sbin/xinetd ];then
   test_bg_prev /usr/sbin/xinetd -f /tmp/$USER-xinetd.v4.conf -filelog $test_bg_filename
   test_bg_egrep 30 "$STR_INIT_OK" ${tdir?}/run-tcp4-0-loopback-client.sh $O_ARGS
   /bin/fuser -s -k -n tcp 5011
+  killall xinetd 2>/dev/null
 
   test_define "TCP6 xinetd loopback$post"
   get_xinetd_conf $USER IPv6 5011 $OPENVPN \
@@ -68,6 +69,7 @@ if [ -x /usr/sbin/xinetd ];then
   test_bg_prev /usr/sbin/xinetd -f /tmp/$USER-xinetd.v6.conf -filelog $test_bg_filename
   test_bg_egrep 30 "$STR_INIT_OK" ${tdir?}/run-tcp6-0-loopback-client.sh $O_ARGS
   /bin/fuser -s -k -n tcp 5011
+  killall xinetd 2>/dev/null
 else
   notice "xinetd executable not found, skipping 2 xinetd tests"
 fi
@@ -85,7 +87,6 @@ test_define "UDP6 loopback4native$post"
 test_bg_prev ${tdir?}/run-udp6-0-loopback_passive.sh
 test_bg_egrep 30 "$STR_INIT_OK" ${tdir?}/run-udp6-0-loopback4native.sh $O_ARGS
 
-(set -x;/sbin/ip -6 -o a </dev/tty >/dev/tty)
 test_define "UDP6 loopback_multihome$post"
 test_bg_prev ${tdir?}/run-udp6-0-loopback_listen_multihome.sh  $O_ARGS
 test_bg_egrep 60 "Peer Connection Initiated with.*via" ${tdir?}/run-udp6-0-loopback_connect_multihome.sh $O_ARGS
