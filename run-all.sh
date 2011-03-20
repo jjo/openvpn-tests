@@ -26,6 +26,24 @@ else
   exit 2
 fi
 
+get_xinetd_conf() {
+	local user=$1 flags=$2 port=$3 server=$4 server_args=$5
+	echo "service openvpn_test
+{
+	disable         = no
+	type            = UNLISTED
+	socket_type     = stream
+	protocol        = tcp
+	wait            = yes
+	user            = $user
+	flags           = $flags
+	port            = $port
+	server 		= $server
+	server_args     = $server_args
+}
+"
+}
+
 all_tests(){
 local post="$1"
 
@@ -34,6 +52,25 @@ test_set_cleanup "${SUDO} killall $OPENVPN"
 trap 'test_bg_cleanup;exit' 0 2 15
 
 STR_INIT_OK="Initialization Sequence Completed"
+
+if [ -x /usr/sbin/xinetd ];then
+  xinetd_server_args="--inetd wait --dev null --mode p2p --verb 3 --secret /home/jjo/src/openvpn-jjo/openvpn.key"
+  test_define "TCP4 xinetd loopback$post"
+  get_xinetd_conf $USER IPv4 5011 $OPENVPN \
+	  "$xinetd_server_args --proto tcp-server --log $test_bg_filename"  > /tmp/$USER-xinetd.v4.conf
+  test_bg_prev /usr/sbin/xinetd -f /tmp/$USER-xinetd.v4.conf -filelog $test_bg_filename
+  test_bg_egrep 30 "$STR_INIT_OK" ${tdir?}/run-tcp4-0-loopback-client.sh $O_ARGS
+  /bin/fuser -s -k -n tcp 5011
+
+  test_define "TCP6 xinetd loopback$post"
+  get_xinetd_conf $USER IPv6 5011 $OPENVPN \
+	  "$xinetd_server_args --proto tcp6-server --log $test_bg_filename"  > /tmp/$USER-xinetd.v6.conf
+  test_bg_prev /usr/sbin/xinetd -f /tmp/$USER-xinetd.v6.conf -filelog $test_bg_filename
+  test_bg_egrep 30 "$STR_INIT_OK" ${tdir?}/run-tcp6-0-loopback-client.sh $O_ARGS
+  /bin/fuser -s -k -n tcp 5011
+else
+  notice "xinetd executable not found, skipping 2 xinetd tests"
+fi
 
 test_define "UDP6 loopback$post"
 test_bg_egrep 30 "$STR_INIT_OK" ${tdir?}/run-udp6-0-loopback.sh $O_ARGS
@@ -90,6 +127,8 @@ test_bg_egrep 30 "Peer Connection Initiated with.*via" ${tdir?}/run-udp4-0-loopb
 test_define "TCP4 loopback$post"
 test_bg_prev ${tdir?}/run-tcp4-0-loopback-server.sh  $O_ARGS
 test_bg_egrep 30 "$STR_INIT_OK" ${tdir?}/run-tcp4-0-loopback-client.sh $O_ARGS
+
+
 
 }
 
