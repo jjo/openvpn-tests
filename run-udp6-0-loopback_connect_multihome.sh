@@ -1,5 +1,5 @@
 #!/bin/sh -x
-UNIQ_LOCAL_ADD=fc00::cabe:ceca:0123
+UNIQ_LOCAL_ADD=fd00::caca:dede:fafa
 while read iface ip6;do 
 	case $iface in wlan*|eth*) ;; *) continue;; esac
 	#placeholder for more iface selection logic
