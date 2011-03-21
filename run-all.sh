@@ -54,7 +54,7 @@ trap 'test_bg_cleanup;exit' 0 2 15
 STR_INIT_OK="Initialization Sequence Completed"
 
 if [ -x /usr/sbin/xinetd ];then
-  xinetd_server_args="--inetd wait --dev null --lport 5012 --mode p2p --verb 3 --secret /home/jjo/src/openvpn-jjo/openvpn.key"
+  xinetd_server_args="--inetd wait --dev null --lport 5012 --mode p2p --verb 3 --secret $PWD/../keys/openvpn.key"
   test_define "TCP4 xinetd loopback$post"
   get_xinetd_conf $USER IPv4 5011 $OPENVPN \
 	  "$xinetd_server_args --proto tcp-server --log $test_bg_filename"  > /tmp/$USER-xinetd.v4.conf

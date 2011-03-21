@@ -8,4 +8,4 @@ done <<EOF
 $(/sbin/ip -o -6 a | sed -nr '/fe80/s/^[0-9]+: ([a-z0-9]+).*(fe80::[0-9a-z:]+).*/\1 \2/p')
 EOF
 (echo == /sbin/ip -6 ad ad $UNIQ_LOCAL_ADD/128 dev $iface ) >/dev/tty
-${GDB} ${OPENVPN?} --dev null --multihome --proto udp6 --local :: --port 5011 --secret ../openvpn.key "$@"
+${GDB} ${OPENVPN?} --dev null --multihome --proto udp6 --local :: --port 5011 --secret ../keys/openvpn.key "$@"
