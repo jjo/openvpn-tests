@@ -6,9 +6,17 @@ typeset test_name	# test name given
 typeset test_sanename	# test name with all whitespace (and alike) replaced by '_'
 typeset test_bg_filename
 typeset test_fg_filename
+typeset -i test_n_pass=0
+typeset -i test_n_fail=0
 
 TEST_CLEANUP=":"
 
+test_report() {
+	echo "= TEST REPORT ="
+	echo "Ntests PASS: " $test_n_pass
+	echo "Ntests FAIL: " $test_n_fail
+	echo "Ntests TOTL: " $test_num
+}
 say () {
 	echo -e "$@" >&3
 } 
@@ -37,8 +45,9 @@ test_expect_success () {
 	test $# -ge 2 || { err "usage error: test_expect_failure msg cmd args ..."; return 1; }
 	say -n "$test_msg: $test_sanename: $msg (expecting success) "
 	shift
-	(eval "$@" 4>&1) && { say -e "\n$test_msg: PASS %%% $test_sanename" ;  return 0 ; }
+	(eval "$@" 4>&1) && { say -e "\n$test_msg: PASS %%% $test_sanename"; test_n_pass=test_n_pass+1; return 0; }
 	say -e "\n$test_msg: FAIL %%% $test_sanename" 
+	test_n_fail=test_n_fail+1
 	return 1
 }
 
@@ -47,8 +56,9 @@ test_expect_failure () {
 	test $# -ge 2 || { err "usage error: test_expect_failure msg cmd args ...";  return 1;}
 	say -n "$test_msg: -- $msg (expecting failure) "
 	shift
-	(eval "$@") && { say -e "\n$test_msg: FAIL %%% $test_sanename" >&3 ;  return 0 ; }
+	(eval "$@") && { say -e "\n$test_msg: FAIL %%% $test_sanename" >&3; test_n_pass=test_n_pass+1; return 0 ; }
 	say -e "\n$test_msg: OK %%% $test_sanename"
+	test_n_fail=test_n_fail+1
 	return 1
 }
 

@@ -127,7 +127,7 @@ test_define "TCP4 loopback$post"
 test_bg_prev ${tdir?}/run-tcp4-0-loopback-server.sh  $O_ARGS
 test_bg_egrep 30 "$STR_INIT_OK" ${tdir?}/run-tcp4-0-loopback-client.sh $O_ARGS
 
-
+test_report
 
 }
 
