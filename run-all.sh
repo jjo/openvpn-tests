@@ -61,7 +61,6 @@ if [ -x /usr/sbin/xinetd ];then
   test_bg_prev /usr/sbin/xinetd -f /tmp/$USER-xinetd.v4.conf -filelog $test_bg_filename
   test_bg_egrep 30 "$STR_INIT_OK" ${tdir?}/run-tcp4-0-loopback-client.sh $O_ARGS
   /bin/fuser -s -k -n tcp 5011
-  killall xinetd 2>/dev/null
 
   test_define "TCP6 xinetd loopback$post"
   get_xinetd_conf $USER IPv6 5011 $OPENVPN \
@@ -69,7 +68,6 @@ if [ -x /usr/sbin/xinetd ];then
   test_bg_prev /usr/sbin/xinetd -f /tmp/$USER-xinetd.v6.conf -filelog $test_bg_filename
   test_bg_egrep 30 "$STR_INIT_OK" ${tdir?}/run-tcp6-0-loopback-client.sh $O_ARGS
   /bin/fuser -s -k -n tcp 5011
-  killall xinetd 2>/dev/null
 else
   notice "xinetd executable not found, skipping 2 xinetd tests"
 fi
