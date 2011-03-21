@@ -30,6 +30,7 @@ test_define() {
 	test_msg="$(printf "Test %02d" $test_num)"
 	test_bg_filename=$LIBTEST_OUTPUT_DIR/out-$test_sanename-prev
 	test_fg_filename=$LIBTEST_OUTPUT_DIR/out-$test_sanename
+	test_bg_cleanup
 }
 test_expect_success () {
 	local msg="$1" 
