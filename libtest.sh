@@ -54,9 +54,11 @@ test_bg_egrep() {
 	local ret
 	shift 2
 	test_expect_success "" \
-		"set -m ; $@ &> $t/out-$test_sanename &
+		"set -m;$@ > $t/out-$test_sanename 2>&1 &
 		s=1;
-		for i in \$(seq 1 $nsecs);do 
+		typeset -i i=0
+		while [ \$i -lt $nsecs ];do
+			i=i+1
 			say -n '.'
 			kill -0 %1 || { egrep failed $t/out-$test_sanename >&4; break; }
 			o=\$(egrep \"$txt\" $t/out-$test_sanename ) && { _P=$'\n  ' debug -n \$o; s=0; break; }
@@ -68,7 +70,8 @@ test_bg_egrep() {
 		" 2>/dev/null 4>$t/err
 	ret=$?
 	test $ret -eq 0 && return 0
-	mv --backup=t $t/out-$test_sanename{,.fail}
+	#mv --backup=t $t/out-$test_sanename{,.fail}
+	mv $t/out-$test_sanename{,.fail}
 	_P='  ' err "$test_sanename: log at $t/out-$test_sanename.fail" 
 	return $ret
 }
