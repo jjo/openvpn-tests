@@ -72,7 +72,6 @@ test_bg_egrep() {
 	shift 2
 	test_expect_success "" \
 		"set -m ; $@ > $LIBTEST_OUTPUT_DIR/out-$test_sanename 2>&1 &
-		exec 2>/home/jjo/tmp/err2; set -x
 		s=1;
 		typeset -i i=0
 		while [ \$i -lt $nsecs ];do
@@ -85,7 +84,7 @@ test_bg_egrep() {
 		kill %1
 		wait
 		exit \$s
-		" 2>/dev/null 4>$LIBTEST_OUTPUT_DIR/err
+		" 2>/dev/null 4>$LIBTEST_OUTPUT_DIR/libtest-$USER.err
 	ret=$?
 	test $ret -eq 0 && return 0
 	mv $LIBTEST_OUTPUT_DIR/out-$test_sanename{,.fail}
