@@ -8,13 +8,14 @@ typeset test_bg_filename
 typeset test_fg_filename
 typeset -i test_n_pass=0
 typeset -i test_n_fail=0
+typeset test_str_fail=""
 
 TEST_CLEANUP=":"
 
 test_report() {
 	echo "= TEST REPORT ="
 	echo "Ntests PASS: " $test_n_pass
-	echo "Ntests FAIL: " $test_n_fail
+	echo "Ntests FAIL: " $test_n_fail  "($test_str_fail)"
 	echo "Ntests TOTL: " $test_num
 }
 say () {
@@ -47,6 +48,7 @@ test_expect_success () {
 	shift
 	(eval "$@" 4>&1) && { say -e "\n$test_msg: PASS %%% $test_sanename"; test_n_pass=test_n_pass+1; return 0; }
 	say -e "\n$test_msg: FAIL %%% $test_sanename" 
+	test_str_fail="$test_str_fail $test_sanename"
 	test_n_fail=test_n_fail+1
 	return 1
 }
@@ -58,6 +60,7 @@ test_expect_failure () {
 	shift
 	(eval "$@") && { say -e "\n$test_msg: FAIL %%% $test_sanename" >&3; test_n_pass=test_n_pass+1; return 0 ; }
 	say -e "\n$test_msg: OK %%% $test_sanename"
+	test_str_fail="$test_str_fail $test_sanename"
 	test_n_fail=test_n_fail+1
 	return 1
 }
