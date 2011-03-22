@@ -13,9 +13,10 @@ typeset test_str_fail=""
 TEST_CLEANUP=":"
 
 test_report() {
+	test -n "$test_str_fail" && test_str_fail="($test_str_fail)"
 	echo "= TEST REPORT ="
 	echo "Ntests PASS: " $test_n_pass
-	echo "Ntests FAIL: " $test_n_fail  "($test_str_fail)"
+	echo "Ntests FAIL: " $test_n_fail  $test_str_fail
 	echo "Ntests TOTL: " $test_num
 }
 say () {
