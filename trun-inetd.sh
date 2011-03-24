@@ -26,7 +26,7 @@ esac
 }
 
 get_xinetd_conf() {
-	local user=$1 flags=$2 port=$3 server=$4 server_args=$5
+	local user=$1 flags=$2 port=$3 server=$4 server_args="$5"
 	echo "service openvpn_test
 {
 	disable         = no
@@ -43,7 +43,7 @@ get_xinetd_conf() {
 "
 }
 get_inetd_conf() {
-	local user=$1 flags=$2 port=$3 server=$4 server_args=$5
+	local user=$1 flags=$2 port=$3 server=$4 server_args="$5"
 	case $flags in IPv4) proto=tcp4;; IPv6) proto=ipv6;; esac
 	echo $port stream $proto wait $user $server ${server##*/} $server_args
 }

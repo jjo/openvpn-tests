@@ -35,7 +35,7 @@ debug () {
 test_define() {
   test_bg_cleanup
   test_name="$*"
-  test_sanename="$(echo -n $test_name| tr -c '[A-Za-z0-9._]' _ )"
+  test_sanename="$(echo -n $test_name| tr -c '[[=-=]A-Za-z0-9._]' _ )"
   test_num=test_num+1
   test_msg="$(printf "Test %02d" $test_num)"
   test_filename=$LIBTEST_OUTPUT_DIR/out-$test_sanename
