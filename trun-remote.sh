@@ -33,9 +33,10 @@ case "${OPENVPN}" in *exe) XTRAS="$(dirname ${OPENVPN})/*.dll";; esac
 #rsync -Lva ${OPENVPN?} ../keys/openvpn.key $XTRAS "[${REM6?}]":/tmp
 }
 remote_check() {
-jjolix6=2a01:198:200:7c8::1
+jjolix6=2a01:198:200:7c8::2
 export REM6
-if ping6 -q -c1 -w1 $jjolix6;then
+#if ping6 -q -c1 -w1 $jjolix6;then
+if ping6 -q -c1 $jjolix6;then
   REM6="$jjolix6"
 elif fping jjolix;then
   DEV="$(/sbin/ip r get fe80::1 | sed -r -n 's/.* dev ([^ ]+).*/\1/p')"
@@ -56,13 +57,13 @@ run_0() {
     udp6-rem_l)
 	openvpn_fname=${OPENVPN##*/}
 	ssh -t ${REM6?} "sh -c '/bin/fuser -k /tmp/${openvpn_fname}*;
-	tmp/${openvpn_fname} --dev null --secret /tmp/openvpn.key --verb 5
+	/tmp/${openvpn_fname} --dev null --secret /tmp/openvpn.key --verb 5 \
                      --proto udp6        --port 5010 --float'"
 	return $?;;
     tcp6-rem_l)
 	openvpn_fname=${OPENVPN##*/}
 	ssh -t ${REM6?} "sh -c '/bin/fuser -k /tmp/${openvpn_fname}*;
-	tmp/${openvpn_fname} --dev null --secret /tmp/openvpn.key --verb 5
+	/tmp/${openvpn_fname} --dev null --secret /tmp/openvpn.key --verb 5 \
                      --proto tcp6-server --port 5010 --float'"
 	return $?;;
 	
