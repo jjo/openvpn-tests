@@ -3,9 +3,6 @@
 # Author: JuanJo Ciarlante
 export LIBTEST_OUTPUT_DIR=~/tmp
 
-# my_env.sh should contain the following vars:
-#   REM6="2002:5457:5de5:2:20d:b9ff:fe29:901a"
-. ${0%/*}/my_env.sh || exit 1
 . ${0%/*}/libtest.sh || exit 1
 
 t=$LIBTEST_OUTPUT_DIR
@@ -37,6 +34,7 @@ STR_INIT_OK="Initialization Sequence Completed"
 
 test_cleanup
 for t in \
+	trun-remote.sh \
 	trun-tcp-loopback.sh \
 	trun-inetd.sh \
 	trun-udp-loopback.sh \
