@@ -78,12 +78,15 @@ EOF
 
 run_0() {
   local vopt_nopt=${1?}-${2?} # {v4,v6}-{byip,bynm}
+xopts=
+case `uname -s` in FreeBSD) xopts="--float";;esac
+
   localhost6=ip6-localhost;case "$(uname -s)" in *BSD) localhost6=localhost;esac
 xtra_ip=127.0.0.2
-case `hostname` in wolfman*) xtra_ip=10.0.1.10;;esac
+case `hostname` in wolfman*) xtra_ip=10.0.1.10;;tornado*) xtra_ip=192.168.1.25;;esac
   case $vopt_nopt in 
-    v4-byip) opt="--proto udp  --remote 127.0.0.1        --port 5011";;
-    v4-bynm) opt="--proto udp  --remote localhost        --port 5011";;
+    v4-byip) opt="--proto udp  --remote 127.0.0.1        --port 5011 $xopts";;
+    v4-bynm) opt="--proto udp  --remote localhost        --port 5011 $xopts";;
     v4-tov6) opt="--proto udp  --remote 127.0.0.1        --rport 5011 --nobind";;
     v6-byip) opt="--proto udp6 --remote ::1              --port 5011";;
     v6-bynm) opt="--proto udp6 --remote $localhost6      --port 5011";;
