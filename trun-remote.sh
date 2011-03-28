@@ -34,13 +34,13 @@ case "${OPENVPN}" in *exe) XTRAS="$(dirname ${OPENVPN})/*.dll";; esac
 }
 remote_check() {
 jjolix6=2a01:198:200:7c8::2
+jjolix6_l=fe80::20d:b9ff:fe14:e09c%wlan0
 export REM6
 #if ping6 -q -c1 -w1 $jjolix6;then
 if ping6 -q -c1 $jjolix6;then
   REM6="$jjolix6"
-elif fping jjolix;then
-  DEV="$(/sbin/ip r get fe80::1 | sed -r -n 's/.* dev ([^ ]+).*/\1/p')"
-  REM6="fe80::20d:b9ff:fe14:e09c%$DEV"
+elif ping6 -q -c1 $jjolix6_l;then
+  REM6="$jjolix6_l"
 #else
 #  REM6=2002:5449:2ce5:2:20d:b9ff:fe14:e09c
 else
