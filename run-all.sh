@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Crude but useful unittests for openvpn over ipv6/4
 # Author: JuanJo Ciarlante
 export LIBTEST_OUTPUT_DIR=~/tmp
