@@ -51,15 +51,17 @@ inetd_serverargs="--inetd wait --dev null --mode p2p --verb 3 --secret $PWD/../k
 run_0() {
   local vopt=${1?} # v4 xor v6
   test -x /usr/sbin/xinetd && {
+    local conffile=$HOME/tmp/$USER-test-cfg-xinetd.$vopt.conf
     get_xinetd_conf $USER IP$vopt 5011 ${OPENVPN?} \
-	  "$inetd_serverargs --proto tcp-server --log /dev/fd/2"  > ~/tmp/$USER-xinetd.$vopt.conf
+	  "$inetd_serverargs --proto tcp-server --log /dev/fd/2" > $conffile
     set -x
-    exec /usr/sbin/xinetd -dontfork -f ~/tmp/$USER-xinetd.$vopt.conf -filelog /dev/fd/2
+    exec /usr/sbin/xinetd -dontfork -f $conffile -filelog /dev/fd/2
   } || {
+    local conffile=$HOME/tmp/$USER-test-cfg-inetd.$vopt.conf
     get_inetd_conf $USER IP$vopt 5011 ${OPENVPN?} \
-	  "$inetd_serverargs --proto tcp-server --log /dev/fd/2"  > ~/tmp/$USER-inetd.$vopt.conf
+	  "$inetd_serverargs --proto tcp-server --log /dev/fd/2" > $conffile
     set -x
-    exec /usr/sbin/inetd -d ~/tmp/$USER-inetd.$vopt.conf
+    exec /usr/sbin/inetd -d $conffile
   }
 }
 run_1() {

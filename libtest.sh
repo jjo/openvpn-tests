@@ -43,7 +43,7 @@ test_define() {
   test_sanename="$(echo -n $test_name| tr -c '[[=-=]A-Za-z0-9._]' _ )"
   test_num=test_num+1
   test_msg="$(printf "Test %02d" $test_num)"
-  test_filename=$LIBTEST_OUTPUT_DIR/out-$test_sanename
+  test_filename=$LIBTEST_OUTPUT_DIR/$USER-test-out-$test_sanename
   > $test_filename
 }
 test_expect_success () {
@@ -94,7 +94,7 @@ test_egrep() {
       sleep 1;
     done;
     exit \$s
-    " 2>/dev/null 4>$LIBTEST_OUTPUT_DIR/libtest-$USER.err
+    " 2>/dev/null 4>$LIBTEST_OUTPUT_DIR/$USER-test-lib.err
   ret=$?
   test $ret -eq 0 && return 0
   mv ${test_filename}{,.fail}
@@ -121,7 +121,7 @@ test_bg_egrep() {
     kill %1
     wait
     exit \$s
-    " 2>/dev/null 4>$LIBTEST_OUTPUT_DIR/libtest-$USER.err
+    " 2>/dev/null 4>$LIBTEST_OUTPUT_DIR/$USER-test-lib.err
   ret=$?
   test $ret -eq 0 && return 0
   mv ${test_filename?}{,.fail}
