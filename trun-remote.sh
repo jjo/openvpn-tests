@@ -33,16 +33,15 @@ case "${OPENVPN}" in *exe) XTRAS="$(dirname ${OPENVPN})/*.dll";; esac
 #rsync -Lva ${OPENVPN?} ../keys/openvpn.key $XTRAS "[${REM6?}]":/tmp
 }
 remote_check() {
-jjolix6=2a01:198:200:7c8::2
-jjolix6_l=fe80::20d:b9ff:fe14:e09c%wlan0
+rem6_r=2a01:198:200:7c8::2
+rem6_l=fe80::20d:b9ff:fe14:e09c%wlan0
+rem6_r=2001:1291:290:1:21f:1fff:feed:634a
 export REM6
 #if ping6 -q -c1 -w1 $jjolix6;then
-if ping6 -q -c1 $jjolix6;then
-  REM6="$jjolix6"
-elif ping6 -q -c1 $jjolix6_l;then
-  REM6="$jjolix6_l"
-#else
-#  REM6=2002:5449:2ce5:2:20d:b9ff:fe14:e09c
+if ping6 -q -c1 $rem6_r;then
+  REM6="$rem6_r"
+elif ping6 -q -c1 $rem6_l;then
+  REM6="$rem6_l"
 else
   return 1
 fi
